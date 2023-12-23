@@ -52,9 +52,16 @@ class ProductDetail extends Component {
 
   private _addToCart() {
     if (!this.product) return;
-
     cartService.addProduct(this.product);
     this._setInCart();
+    fetch('/api/sendEvent', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'addToCart',
+        payload: this.product,
+        timestamp: new Date().getTime(),
+      }),
+    });
   }
 
   private _setInCart() {

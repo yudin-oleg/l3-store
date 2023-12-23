@@ -30,5 +30,13 @@ export default class Router {
 
     component.attach(this.$appRoot);
     component.render();
+    fetch('/api/sendEvent', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'route',
+        payload: window.location.pathname,
+        timestamp: new Date().getTime(),
+      }),
+    });
   }
 }

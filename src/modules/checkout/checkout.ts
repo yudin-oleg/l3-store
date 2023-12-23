@@ -1,7 +1,7 @@
 import { Component } from '../component';
 import { Product } from '../product/product';
 import html from './checkout.tpl.html';
-import { formatPrice } from '../../utils/helpers';
+import { formatPrice, genUUID } from '../../utils/helpers';
 import { cartService } from '../../services/cart.service';
 import { ProductData } from 'types';
 
@@ -22,7 +22,7 @@ class Checkout extends Component {
       productComp.attach(this.view.cart);
     });
 
-    const totalPrice = this.products.reduce((acc, product) => (acc += product.salePriceU), 0);
+    const totalPrice = this._getPrice();
     this.view.price.innerText = formatPrice(totalPrice);
 
     this.view.btnOrder.onclick = this._makeOrder.bind(this);
@@ -35,6 +35,22 @@ class Checkout extends Component {
       body: JSON.stringify(this.products)
     });
     window.location.href = '/?isSuccessOrder';
+    fetch('/api/sendEvent', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: 'purchase',
+        payload: {
+          orderId: genUUID(),
+          totalPrice: this._getPrice(),
+          productIds: this.products.map((product) => product.id),
+        },
+        timestamp: new Date().getTime(),
+      }),
+    });
+  }
+
+  private _getPrice(){
+    return this.products.reduce((acc, product) => (acc += product.salePriceU), 0)
   }
 }
 
