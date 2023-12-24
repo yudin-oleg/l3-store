@@ -9,3 +9,18 @@
     margin-top: 30px;
   }
 }
+.autocomplete{
+  font-size: 13px;
+  margin-bottom: 20px;
+  & a{
+    text-transform: lowercase;
+    background: #F6F6FA;
+    border-radius: 8px;
+    padding: 4px 4px 8px 4px;
+    cursor: pointer;
+    color:#DA15B8;
+  }
+  & span{
+    font-weight: 700;
+  }
+}

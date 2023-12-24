@@ -3,18 +3,23 @@ import { Component } from '../component';
 import html from './homepage.tpl.html';
 
 import { ProductList } from '../productList/productList';
+import { Autocomplete } from '../autocomplete/autocomplete';
 
 class Homepage extends Component {
   popularProducts: ProductList;
+  autocomplete: Autocomplete;
 
   constructor(props: any) {
     super(props);
 
     this.popularProducts = new ProductList();
     this.popularProducts.attach(this.view.popular);
+    this.autocomplete = new Autocomplete();
+    this.autocomplete.attach(this.view.autocomplete);
   }
 
   render() {
+    this.autocomplete.render();
     fetch('/api/getPopularProducts')
       .then((res) => res.json())
       .then((products) => {
