@@ -15,9 +15,12 @@ export class Product {
     this.product = product;
     this.params = params;
     this.view = new ViewTemplate(html).cloneView();
+    this.getSecretKey();
   }
 
   attach($root: HTMLElement) {
+    // @ts-ignore
+    this.view.root.$product = this.product;
     $root.appendChild(this.view.root);
   }
 
@@ -30,5 +33,18 @@ export class Product {
     this.view.price.innerText = formatPrice(salePriceU);
 
     if (this.params.isHorizontal) this.view.root.classList.add('is__horizontal')
+  }
+
+  observe(observer: IntersectionObserver){
+    observer.observe(this.view.root);
+  }
+
+  async getSecretKey(){
+    fetch(`/api/getProductSecretKey?id=${this.product.id}`)
+      .then((res) => res.json())
+      .then((secretKey) => {
+        // @ts-ignore
+        this.view.root.$secretKey = secretKey;
+      });
   }
 }
