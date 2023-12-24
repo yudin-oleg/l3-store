@@ -9,12 +9,14 @@ import { favoritesService } from '../../services/favorites.service';
 class ProductDetail extends Component {
   more: ProductList;
   product?: ProductData;
+  added: boolean;
 
   constructor(props: any) {
     super(props);
 
     this.more = new ProductList();
     this.more.attach(this.view.more);
+    this.added = false;
   }
 
   async render() {
@@ -33,13 +35,14 @@ class ProductDetail extends Component {
     this.view.description.innerText = description;
     this.view.price.innerText = formatPrice(salePriceU);
     this.view.btnBuy.onclick = this._addToCart.bind(this);
-    this.view.btnFav.onclick = this._addToFav.bind(this);
+    this.view.btnFav.onclick = this._addDeleteFav.bind(this);
 
     const isInCart = await cartService.isInCart(this.product);
     const isInFav = await favoritesService.isInFav(this.product);
 
     if (isInCart) this._setInCart();
     if (isInFav) this._setInFav();
+    if (!isInFav) this._takeFromFav();
 
     fetch(`/api/getProductSecretKey?id=${id}`)
       .then((res) => res.json())
@@ -66,15 +69,25 @@ class ProductDetail extends Component {
     this.view.btnBuy.disabled = true;
   }
 
-  private _addToFav() {
+  private _addDeleteFav() {
     if (!this.product) return;
-
-    favoritesService.addProduct(this.product);
-    this._setInFav();
+    if(this.added === false){
+      favoritesService.addProduct(this.product);
+      this._setInFav();
+    }else{
+      favoritesService.removeProduct(this.product);
+      this._takeFromFav();
+    }
   }
 
   private _setInFav() {
-    this.view.btnFav.disabled = true;
+    this.added = true;
+    this.view.btnFav.classList.add('added');
+  }
+
+  private _takeFromFav() {
+    this.added = false;
+    this.view.btnFav.classList.remove('added');
   }
 }
 

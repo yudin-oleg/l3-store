@@ -174,3 +174,7 @@ img {
     margin-bottom: 30px;
   }
 }
+
+.btnFav .added + .svg-icon path{
+  fill: var(--plate-color);
+}

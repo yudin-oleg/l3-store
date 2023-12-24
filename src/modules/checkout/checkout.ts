@@ -9,7 +9,6 @@ class Checkout extends Component {
   products!: ProductData[];
 
   async render() {
-    // await cartService.clear();
     this.products = await cartService.get();
 
     if (this.products.length < 1) {

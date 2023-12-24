@@ -1,42 +1,26 @@
 import { Component } from '../component';
-import { Product } from '../product/product';
 import html from './favorites.tpl.html';
-// import { formatPrice } from '../../utils/helpers';
 import { favoritesService } from '../../services/favorites.service';
-import { ProductData } from 'types';
+import { ProductList } from '../productList/productList';
+import { View } from '../../utils/view';
+import { ViewTemplate } from '../../utils/viewTemplate';
 
-class Favorites extends Component {
-    products!: ProductData[];
+class Favorites extends Component{
+    productList: ProductList;
+    view: View;
 
-    async render() {
-        // await favoritesService.clear();
-        this.products = await favoritesService.get();
+    constructor(props: any) {
+        super(props);
 
-        if (this.products.length < 1) {
-            this.view.root.classList.add('is__empty');
-            return;
-        }
-
-        this.products.forEach((product) => {
-        const productComp = new Product(product, { isHorizontal: true });
-        productComp.render();
-        productComp.attach(this.view.favorites);
-        });
-
-        // const totalPrice = this.products.reduce((acc, product) => (acc += product.salePriceU), 0);
-        // this.view.price.innerText = formatPrice(totalPrice);
-
-        // this.view.btnOrder.onclick = this._makeOrder.bind(this);
+        this.view = new ViewTemplate(html).cloneView();
+        this.productList = new ProductList();
+        this.productList.attach(this.view.favorites);
     }
 
-    // private async _makeOrder() {
-    //     await cartService.clear();
-    //     fetch('/api/makeOrder', {
-    //     method: 'POST',
-    //     body: JSON.stringify(this.products)
-    //     });
-    //     window.location.href = '/?isSuccessOrder';
-    // }
+    async render() {
+        const products = await favoritesService.get();
+        this.productList.update(products);
+    }
 }
 
 export const favoritesComp = new Favorites(html);
